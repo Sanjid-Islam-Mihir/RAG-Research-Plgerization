@@ -46,17 +46,17 @@ stages:
     params:
       params.yaml:
         llm.max_new_tokens: 1024
-        llm.model_id: microsoft/Phi-4-mini-instruct
+        llm.model_id: Qwen/Qwen3-4B-Instruct-2507
         llm.temperature: 0.3
     outs:
     - path: answer_sheet.json
       hash: md5
-      md5: f730c29554e5b2a835d9219c6bff9182
-      size: 984
+      md5: 3c914b4895b9db04e846d017d116d658
+      size: 1240
     - path: qa_output.json
       hash: md5
-      md5: d6a0de43e21e3b7e7aad70e5a739cc4d
-      size: 1463
+      md5: b7a9854afe9dab9485ca7a3057e066f6
+      size: 2125
   prepare_pairs:
     cmd: python prepare_pairs.py data/mrpc_pairs.csv data/prepared
     deps:

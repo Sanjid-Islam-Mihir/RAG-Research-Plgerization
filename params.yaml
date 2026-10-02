@@ -1,5 +1,6 @@
 llm:
-  model_id: "microsoft/Phi-4-mini-instruct"
+  # model_id: "microsoft/Phi-4-mini-instruct" V1-phi4
+  model_id: "Qwen/Qwen3-4B-Instruct-2507"
   max_new_tokens: 1024
   temperature: 0.3
 
