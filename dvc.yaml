@@ -1,0 +1,21 @@
+stages:
+  generate_qa:
+    cmd: python main.py "data/NIPS 2017 attention is all you need Paper.pdf"
+    deps:
+      - main.py
+      - pdf_parser.py
+      - chunker.py
+      - embedder.py
+      - vector_store.py
+      - retriever.py
+      - llm.py
+      - qa_generator.py
+      - answer_sheet.py
+      - data/NIPS 2017 attention is all you need Paper.pdf
+    params:
+      - llm.model_id
+      - llm.max_new_tokens
+      - llm.temperature
+    outs:
+      - qa_output.json
+      - answer_sheet.json

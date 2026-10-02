@@ -1,0 +1,13 @@
+# secrets - never commit this
+.env
+
+# python
+__pycache__/
+*.pyc
+venv/
+
+# local vector DB (rebuilt each run, not meant to be versioned in git)
+chroma_db/
+
+# DVC manages these as pipeline outputs, not plain git files
+# (dvc stage add will also append entries here automatically)

@@ -1,0 +1,27 @@
+pdf_path: "data/sample_paper.pdf"
+
+chunking:
+  chunk_size: 1000
+  chunk_overlap: 150
+  splitter_type: "recursive"   # recursive | token
+
+embedding:
+  model_name: "sentence-transformers/all-MiniLM-L6-v2"
+
+vector_store:
+  persist_directory: "chroma_db"
+  collection_name: "research_papers"
+
+retrieval:
+  query: "key contributions, methodology, and results of this paper"
+  k: 6            # number of chunks retrieved (~ = number of Q&A pairs)
+  fetch_k: 20     # candidate pool for MMR before picking diverse k
+  lambda_mult: 0.5
+
+llm:
+  model_id: "microsoft/Phi-4-mini-instruct"
+  max_new_tokens: 1024
+  temperature: 0.3
+
+qa_generation:
+  num_questions: 5
