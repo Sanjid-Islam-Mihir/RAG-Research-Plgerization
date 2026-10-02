@@ -19,3 +19,38 @@ stages:
     outs:
       - qa_output.json
       - answer_sheet.json
+
+  prepare_pairs:
+    cmd: python prepare_pairs.py data/mrpc_pairs.csv data/prepared
+    deps:
+      - prepare_pairs.py
+      - embedder.py
+      - evaluator.py
+      - data/mrpc_pairs.csv
+    params:
+      - plagiarism_detection.sample_size
+      - plagiarism_detection.split
+    outs:
+      - data/prepared/train_features.csv
+      - data/prepared/test_features.csv
+
+  train_classifier:
+    cmd: python train_classifier.py data/prepared/train_features.csv models/plagiarism_classifier.joblib
+    deps:
+      - train_classifier.py
+      - data/prepared/train_features.csv
+    params:
+      - plagiarism_detection.model
+      - plagiarism_detection.split.random_state
+    outs:
+      - models/plagiarism_classifier.joblib
+
+  evaluate_classifier:
+    cmd: python evaluate_classifier.py models/plagiarism_classifier.joblib data/prepared/test_features.csv metrics/plagiarism_metrics.json
+    deps:
+      - evaluate_classifier.py
+      - models/plagiarism_classifier.joblib
+      - data/prepared/test_features.csv
+    metrics:
+      - metrics/plagiarism_metrics.json:
+          cache: false

@@ -1,0 +1,135 @@
+schema: '2.0'
+stages:
+  generate_qa:
+    cmd: python main.py "data/NIPS 2017 attention is all you need Paper.pdf"
+    deps:
+    - path: answer_sheet.py
+      hash: md5
+      md5: 1132e494bba317036b35796e0eb320e4
+      size: 2773
+    - path: chunker.py
+      hash: md5
+      md5: 533acae486c5f7aee88682b018fc99ac
+      size: 2068
+    - path: data/NIPS 2017 attention is all you need Paper.pdf
+      hash: md5
+      md5: 7a6bb1fcdceec29ff330d3af68fbe5d8
+      size: 569417
+    - path: embedder.py
+      hash: md5
+      md5: c4ce6d2d921b216b4709a35e17a8ce4e
+      size: 572
+    - path: llm.py
+      hash: md5
+      md5: 9bb946fedf40944676074eb0d0e421b5
+      size: 3460
+    - path: main.py
+      hash: md5
+      md5: 5538f413e5f6ebf20a52498a4f765bc7
+      size: 2620
+    - path: pdf_parser.py
+      hash: md5
+      md5: 2a8cb6180dbe4aeeda173809731848e2
+      size: 718
+    - path: qa_generator.py
+      hash: md5
+      md5: 878cdb89a6f11f46d139c55eaf0a1583
+      size: 3378
+    - path: retriever.py
+      hash: md5
+      md5: e185a664cbfaa6d8c1479e68f0e79594
+      size: 1313
+    - path: vector_store.py
+      hash: md5
+      md5: 8885c0d05b114ec0b96f466308534a9a
+      size: 1442
+    params:
+      params.yaml:
+        llm.max_new_tokens: 1024
+        llm.model_id: microsoft/Phi-4-mini-instruct
+        llm.temperature: 0.3
+    outs:
+    - path: answer_sheet.json
+      hash: md5
+      md5: f730c29554e5b2a835d9219c6bff9182
+      size: 984
+    - path: qa_output.json
+      hash: md5
+      md5: d6a0de43e21e3b7e7aad70e5a739cc4d
+      size: 1463
+  prepare_pairs:
+    cmd: python prepare_pairs.py data/mrpc_pairs.csv data/prepared
+    deps:
+    - path: data/mrpc_pairs.csv
+      hash: md5
+      md5: ccd5fed472ebe9e760c99bff1ef5afac
+      size: 1002654
+    - path: embedder.py
+      hash: md5
+      md5: c4ce6d2d921b216b4709a35e17a8ce4e
+      size: 572
+    - path: evaluator.py
+      hash: md5
+      md5: e1f6e8409ef37cf707c56835bcd74347
+      size: 4687
+    - path: prepare_pairs.py
+      hash: md5
+      md5: 5c5367278302fe68f2b6aae8925a401e
+      size: 3181
+    params:
+      params.yaml:
+        plagiarism_detection.sample_size: 1500
+        plagiarism_detection.split:
+          test_size: 0.2
+          random_state: 42
+    outs:
+    - path: data/prepared/test_features.csv
+      hash: md5
+      md5: 2ef6b50b56d1e2c376e0b3e580f36df7
+      size: 17079
+    - path: data/prepared/train_features.csv
+      hash: md5
+      md5: eb8541fbcacbf7fa7f1b22cfb9c37c13
+      size: 68336
+  train_classifier:
+    cmd: python train_classifier.py data/prepared/train_features.csv 
+      models/plagiarism_classifier.joblib
+    deps:
+    - path: data/prepared/train_features.csv
+      hash: md5
+      md5: eb8541fbcacbf7fa7f1b22cfb9c37c13
+      size: 68336
+    - path: train_classifier.py
+      hash: md5
+      md5: 6b0b03ad8d4446969360790bc3c15386
+      size: 1231
+    params:
+      params.yaml:
+        plagiarism_detection.model: logistic_regression
+        plagiarism_detection.split.random_state: 42
+    outs:
+    - path: models/plagiarism_classifier.joblib
+      hash: md5
+      md5: 31f2081e56a395060ef9283d69ff6660
+      size: 1215
+  evaluate_classifier:
+    cmd: python evaluate_classifier.py models/plagiarism_classifier.joblib 
+      data/prepared/test_features.csv metrics/plagiarism_metrics.json
+    deps:
+    - path: data/prepared/test_features.csv
+      hash: md5
+      md5: 2ef6b50b56d1e2c376e0b3e580f36df7
+      size: 17079
+    - path: evaluate_classifier.py
+      hash: md5
+      md5: c3bdb9f43f22194aa97b6f97fe9a0c2d
+      size: 1170
+    - path: models/plagiarism_classifier.joblib
+      hash: md5
+      md5: 31f2081e56a395060ef9283d69ff6660
+      size: 1215
+    outs:
+    - path: metrics/plagiarism_metrics.json
+      hash: md5
+      md5: cafdff6d6e37c0fe74eb65e5a81c3ffa
+      size: 121
